@@ -1,0 +1,48 @@
+@startuml
+left to right direction
+
+interface Mouse
+interface Keyboard
+node "<<Desktop>>" as dk {
+node "<<Operating system Windows/Linux/Mac>>" {
+node "<<Web Browser>>" {
+component [*.js] as js
+component Metamask
+}
+}
+}
+
+Keyboard -- dk
+Mouse -- dk
+node "<<Cloud>>\nVercel Frontend Cloud" as vercelNode {
+node "<<Application Frontend Next.js>>" as frontEnd
+}
+dk -- vercelNode : HTTPS
+frontEnd .left-> Metamask
+
+node "<<Execution Environment>>\nEthereum Virtual Machine" as EVM {
+
+artifact "<<artifact>>\nMainContract" as main
+artifact "<<artifact>>\nMinter" as minter
+artifact "<<artifact>>\nStorage" as storage
+artifact "<<artifact>>\nChainlinkVRFCoordinator" as vrf
+artifact "<<artifact>>\nChainlinkKeeperRegistry" as automation
+artifact "<<artifact>>\nChainlinkEthUsdPriceFeed" as priceFeed
+main .> automation
+main .> priceFeed
+main .> vrf
+main .> storage
+minter .> main
+}
+
+vercelNode -- EVM : JSON-RPC
+
+node "<<device>>\n Chainlink Off-Chain Architeture" as offChain
+
+EVM -- offChain : "JSON-RPC"
+
+
+automation .right-> offChain
+vrf .right-> offChain
+priceFeed .right-> offChain
+@enduml
